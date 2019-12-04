@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import gql from 'graphql-tag'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 
@@ -11,7 +10,6 @@ const mutation = gql`
       }
     }
 `
-
 const DELETE_TODO = gql`
 mutation deleteTodo($id: ID!) {
   deleteTodo (id: $id ){
@@ -19,7 +17,6 @@ mutation deleteTodo($id: ID!) {
     }
 }
 `
-
 const query = gql`
     query allTodoes {
     allTodoes {
