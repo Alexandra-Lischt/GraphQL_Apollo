@@ -12,18 +12,58 @@ const mutation = gql`
     }
 `
 
+const DELETE_TODO = gql`
+mutation deleteTodo($id: ID!) {
+  deleteTodo (id: $id ){
+    id
+    }
+}
+`
+const UPDATE_TODO = gql`
+mutation updateTodo($text: String! , $id: ID!) {
+  updateTodo (text: $text, id: $id){
+    id
+    text
+    }
+}
+`
 const query = gql`
     query allTodoes {
     allTodoes {
-        id 
+        id
         text
     }
   }
 `
-
 function App() {
+  const [id, setId] = useState('')
+  const [deleteTodo, { loading: deleting }] = useMutation(DELETE_TODO, {
+   refetchQueries:["allTodoes"]
+  })
+
+  const [updateTodo, { loading: updating }] = useMutation(UPDATE_TODO, {
+    refetchQueries:["allTodoes"]
+   })
+
+  const remove = () => {
+    if (deleting) return;
+    deleteTodo({
+      variables: { id: id }
+    });
+  };
+
+  const update = () => {
+    if (updating) return;
+    updateTodo({
+      variables: { todo: upcate }
+    });
+  };
+ 
+
+  const [upcate, setUpcate] = useState('')
   const { loading, data } = useQuery(query)
   const [text, setText] = useState('')
+
   const [createTodo, { error}] = useMutation(mutation, {
     variables: { text }, refetchQueries:["allTodoes"]
   })
@@ -35,10 +75,16 @@ function App() {
     <div className="App">
       <input onChange={e=> setText(e.target.value)}/>
       <button onClick={createTodo}>Create Todo</button>
+
+      <button onClick={remove}>Delete Todo</button>
+
+      <input onChange={e=> setUpcate(e.target.value)}/>
+      <button onClick={update}>Update Todo</button>
+
       {
         data.allTodoes.map((todo) => (
           <div key={todo.id}>
-            <h2>{todo.text}</h2>
+            <h2 onClick={() => setId(todo.id)}>{todo.text}</h2>
           </div>
         ))
       }
